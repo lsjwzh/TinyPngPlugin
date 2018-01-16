@@ -2,17 +2,14 @@
   <id>com.lsjwzh.plugin.tinypng</id>
   <name>TinyPng Plugin</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="lsjwzh@163.com" url="http://www.github.com/lsjwzh">lsjwzh</vendor>
 
-  <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
-    ]]></description>
+  <description>
+    This is a plugin for TinyPng.
+  </description>
 
-  <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
+  <change-notes>
+    1.0 init commit
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
