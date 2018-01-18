@@ -25,40 +25,29 @@ public class TinyPngExtension extends AnAction {
     public static final String TINY_PNG_API_KEY = "tiny_png_api_key";
 
     static ExecutorService sExecutorService = Executors.newSingleThreadExecutor();
+    AtomicBoolean runningFlag = new AtomicBoolean(true);
+    int successCount = 0;
+    int failCount = 0;
 
     @Override
     public void actionPerformed(AnActionEvent actionEvent) {
         Project project = actionEvent.getProject();
-        VirtualFile[] selectedFiles = PlatformDataKeys.VIRTUAL_FILE_ARRAY.getData(actionEvent.getDataContext());
         String apiKey = PropertiesComponent.getInstance().getValue(TINY_PNG_API_KEY);
         if (TextUtils.isEmpty(apiKey)) {
             apiKey = Messages.showInputDialog(project, "What's your ApiKey?", "ApiKey", Messages.getQuestionIcon());
             PropertiesComponent.getInstance().setValue(TINY_PNG_API_KEY, apiKey);
         }
+        VirtualFile[] selectedFiles = PlatformDataKeys.VIRTUAL_FILE_ARRAY.getData(actionEvent.getDataContext());
         Tinify.setKey(apiKey);
         ProgressDialog dialog = new ProgressDialog();
-        AtomicBoolean runningFlag = new AtomicBoolean(true);
         sExecutorService.submit(() -> {
             //writing to file
             int i = 1;
-            int successCount = 0;
-            int failCount = 0;
+            successCount = 0;
+            failCount = 0;
             List<VirtualFile> failFileList = new ArrayList<>();
             for (VirtualFile file : selectedFiles) {
-                if (runningFlag.get() &&
-                        file.getExtension() != null) {
-                    dialog.setLabelMsg(i + "/" + selectedFiles.length + " processing :" + file.getName());
-                    try {
-                        Tinify.fromFile(file.getPath()).toFile(file.getPath());
-                        dialog.setLabelMsg(i + "/" + selectedFiles.length + " process done :" + file.getName());
-                        successCount++;
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                        dialog.setLabelMsg(i + "/" + selectedFiles.length + " process error :" + file.getName());
-                        failFileList.add(file);
-                        failCount++;
-                    }
-                }
+                failFileList.addAll(processFile(dialog, i + "/" + selectedFiles.length, file));
                 i++;
             }
             dialog.setLabelMsg("Success :" + successCount + " Fail :" + failCount);
@@ -75,5 +64,30 @@ public class TinyPngExtension extends AnAction {
         dialog.setLocationRelativeTo(frame);
         dialog.pack();
         dialog.setVisible(true);
+    }
+
+    private  List<VirtualFile> processFile(ProgressDialog dialog, String prefix, VirtualFile file) {
+        List<VirtualFile> failFileList = new ArrayList<>();
+        if (file.isDirectory()) {
+            for (VirtualFile subFile : file.getChildren()) {
+                failFileList.addAll(processFile(dialog, prefix, subFile));
+            }
+        } else {
+            if (runningFlag.get() &&
+                    file.getExtension() != null) {
+                dialog.setLabelMsg(prefix + " processing :" + file.getName());
+                try {
+                    Tinify.fromFile(file.getPath()).toFile(file.getPath());
+                    dialog.setLabelMsg(prefix + " process done :" + file.getName());
+                    successCount++;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    dialog.setLabelMsg(prefix + " process error :" + file.getName());
+                    failFileList.add(file);
+                    failCount++;
+                }
+            }
+        }
+        return failFileList;
     }
 }
