@@ -20,8 +20,9 @@
   <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
   -->
+    <depends>com.intellij.modules.platform</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
+    <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
     <applicationConfigurable instance="com.lsjwzh.plugin.tinypng.SettingsEditor"></applicationConfigurable>
 </extensions>
