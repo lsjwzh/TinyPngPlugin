@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.lsjwzh.plugin.tinypng</id>
   <name>TinyPng Plugin</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="lsjwzh@163.com" url="http://www.github.com/lsjwzh">lsjwzh</vendor>
 
   <description>
